@@ -666,14 +666,14 @@ class ZMQTerminalInteractiveShell(SingletonConfigurable):
         # out of our internal code.
         while True:
             try:
-                tasks = [self.interact(loop=loop)]
+                tasks = [self.interact()]
 
                 if self.include_other_output:
                     # only poll the iopub channel asynchronously if we
                     # wish to include external content
-                    tasks.append(self.handle_external_iopub(loop=loop))
+                    tasks.append(self.handle_external_iopub())
 
-                main_task = asyncio.wait(tasks, loop=loop, return_when=asyncio.FIRST_COMPLETED)
+                main_task = asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
                 _, pending = loop.run_until_complete(main_task)
 
                 for task in pending:
