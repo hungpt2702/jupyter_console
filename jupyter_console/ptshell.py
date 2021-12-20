@@ -29,6 +29,7 @@ from traitlets import (
     Enum,
     Instance,
     Any,
+    Type,
 )
 from traitlets.config import SingletonConfigurable
 
@@ -75,6 +76,7 @@ from pygments.styles import get_style_by_name
 from pygments.lexers import get_lexer_by_name
 from pygments.util import ClassNotFound
 from pygments.token import Token
+from pygments.style import Style
 
 import jupyter_client
 
@@ -198,8 +200,9 @@ class ZMQTerminalInteractiveShell(SingletonConfigurable):
         help="Shortcut style to use at the prompt. 'vi' or 'emacs'.",
     )
 
-    highlighting_style = Unicode('', config=True,
-        help="The name of a Pygments style to use for syntax highlighting"
+    highlighting_style = Type(klass=Style, config=True,
+        help="""The name or class of a Pygments style to use for syntax
+        highlighting. To see available styles, run `pygmentize -L styles`."""
     )
 
     highlighting_style_overrides = Dict(config=True,
@@ -527,7 +530,7 @@ class ZMQTerminalInteractiveShell(SingletonConfigurable):
             Token.RemotePrompt: '#999900',
         }
         if self.highlighting_style:
-            style_cls = get_style_by_name(self.highlighting_style)
+            style_cls = self.highlighting_style
         else:
             style_cls = get_style_by_name('default')
             # The default theme needs to be visible on both a dark background
